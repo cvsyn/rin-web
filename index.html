@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="RIN API — minimal identity service for agents." />
+    <title>RIN API — Minimal Identity for Agents</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Spline+Sans:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="bg-orb orb-a"></div>
+    <div class="bg-orb orb-b"></div>
+    <div class="bg-grid"></div>
+
+    <header class="site-header">
+      <div class="container nav">
+        <div class="brand">
+          <span class="brand-mark">RIN</span>
+          <span class="brand-text">API</span>
+        </div>
+        <nav class="nav-links">
+          <a href="#features">Features</a>
+          <a href="#quickstart">Quickstart</a>
+          <a href="#pricing">Pricing</a>
+          <a href="#faq">FAQ</a>
+        </nav>
+        <a class="btn ghost" href="#quickstart">Get Started</a>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div class="container hero-grid">
+          <div>
+            <p class="eyebrow">Minimal identity service for agents</p>
+            <h1>RIN API</h1>
+            <p class="lead">
+              Issue a unique RIN, claim it securely, and query identity records with a curl-first API built for agents.
+            </p>
+            <div class="cta-row">
+              <a class="btn primary" href="#quickstart">View Docs</a>
+              <a
+                class="btn ghost"
+                href="https://api.cvsyn.com/health?db=1"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Status
+              </a>
+            </div>
+            <div class="hero-meta">
+              <div>
+                <span class="meta-label">Base URL</span>
+                <span class="meta-value">https://api.cvsyn.com</span>
+              </div>
+              <div>
+                <span class="meta-label">Latency</span>
+                <span class="meta-value">Low & predictable</span>
+              </div>
+            </div>
+          </div>
+          <div class="hero-card">
+            <div class="hero-card-header">
+              <span>Live Example</span>
+              <span class="pill">POST</span>
+            </div>
+            <pre><code>curl -s https://api.cvsyn.com/api/register \
+  -H 'Content-Type: application/json' \
+  -d '{"agent_type":"assistant","agent_name":"airin"}'</code></pre>
+            <div class="hero-card-foot">
+              <span>Returns: rin, claim_token, issued_at</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="features" class="section">
+        <div class="container">
+          <h2>Features</h2>
+          <p class="section-lead">Small surface area, strong guarantees.</p>
+          <div class="feature-grid">
+            <div class="feature-card">
+              <h3>Claim-token security</h3>
+              <p>Every RIN ships with a one-time claim token to prevent hijacking.</p>
+            </div>
+            <div class="feature-card">
+              <h3>DB-aware health checks</h3>
+              <p>Monitor API + database status via /health?db=1 in one call.</p>
+            </div>
+            <div class="feature-card">
+              <h3>Simple curl-first API</h3>
+              <p>Register, claim, and lookup with three endpoints and JSON.</p>
+            </div>
+            <div class="feature-card">
+              <h3>Rate limiting ready</h3>
+              <p>Designed to apply per-agent throttles without breaking callers.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="quickstart" class="section">
+        <div class="container">
+          <h2>Quickstart</h2>
+          <p class="section-lead">Copy-paste to get a RIN and claim it.</p>
+
+          <div class="code-grid">
+            <div class="code-block">
+              <div class="code-head">
+                <span>Register a new RIN</span>
+                <button class="copy-btn" data-copy-target="code-register">Copy</button>
+              </div>
+              <pre><code id="code-register">curl -s https://api.cvsyn.com/api/register \
+  -H 'Content-Type: application/json' \
+  -d '{"agent_type":"assistant","agent_name":"rin-demo"}'</code></pre>
+            </div>
+
+            <div class="code-block">
+              <div class="code-head">
+                <span>Lookup by RIN</span>
+                <button class="copy-btn" data-copy-target="code-lookup">Copy</button>
+              </div>
+              <pre><code id="code-lookup">curl -s https://api.cvsyn.com/api/id/RIN_123456</code></pre>
+            </div>
+
+            <div class="code-block">
+              <div class="code-head">
+                <span>Claim with wrong token (403)</span>
+                <button class="copy-btn" data-copy-target="code-claim-wrong">Copy</button>
+              </div>
+              <pre><code id="code-claim-wrong">curl -s https://api.cvsyn.com/api/claim \
+  -H 'Content-Type: application/json' \
+  -d '{"rin":"RIN_123456","claimed_by":"agent-001","claim_token":"bad-token"}'</code></pre>
+            </div>
+
+            <div class="code-block">
+              <div class="code-head">
+                <span>Claim with correct token (200)</span>
+                <button class="copy-btn" data-copy-target="code-claim-right">Copy</button>
+              </div>
+              <pre><code id="code-claim-right">curl -s https://api.cvsyn.com/api/claim \
+  -H 'Content-Type: application/json' \
+  -d '{"rin":"RIN_123456","claimed_by":"agent-001","claim_token":"YOUR_CLAIM_TOKEN"}'</code></pre>
+            </div>
+
+            <div class="code-block">
+              <div class="code-head">
+                <span>Health (DB aware)</span>
+                <button class="copy-btn" data-copy-target="code-health">Copy</button>
+              </div>
+              <pre><code id="code-health">curl -s https://api.cvsyn.com/health?db=1</code></pre>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="pricing" class="section">
+        <div class="container">
+          <div class="pricing-card">
+            <div>
+              <h2>Pricing</h2>
+              <p class="section-lead">Simple, predictable, and free.</p>
+            </div>
+            <div class="price">Free for now</div>
+            <p class="pricing-note">We may introduce paid tiers once usage scales. Early adopters get priority notice.</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="faq" class="section">
+        <div class="container">
+          <h2>FAQ</h2>
+          <div class="faq-grid">
+            <div class="faq-item">
+              <h3>What is a RIN?</h3>
+              <p>A RIN is a stable identifier you can assign to an agent at creation time.</p>
+            </div>
+            <div class="faq-item">
+              <h3>Is this authentication?</h3>
+              <p>No. RIN is identity metadata, not a full auth system.</p>
+            </div>
+            <div class="faq-item">
+              <h3>What about rate limits?</h3>
+              <p>We enforce fair-use limits per agent and can tune for high-volume clients.</p>
+            </div>
+            <div class="faq-item">
+              <h3>How do I host my own?</h3>
+              <p>Reach out and we can share deployment guidance for self-hosting.</p>
+            </div>
+            <div class="faq-item">
+              <h3>How do I contact you?</h3>
+              <p>Email us at xlucyv@gmail.com for support or partnerships.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container footer-grid">
+        <span>© 2026 RIN API. All rights reserved.</span>
+        <div class="footer-links">
+          <a href="https://github.com/your-org/rin-api" target="_blank" rel="noopener noreferrer">GitHub</a>
+          <a href="mailto:xlucyv@gmail.com">xlucyv@gmail.com</a>
+        </div>
+      </div>
+    </footer>
+
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+    <script src="main.js"></script>
+  </body>
+</html>

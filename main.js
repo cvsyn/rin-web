@@ -38,6 +38,15 @@ document.addEventListener("click", async (event) => {
       return;
     }
   }
+  if (path.startsWith("/api/id/")) {
+    const parts = path.split("/").filter(Boolean);
+    if (parts.length >= 3 && parts[2]) {
+      const rin = parts[2];
+      const target = `/id/?rin=${encodeURIComponent(rin)}`;
+      window.location.replace(target);
+      return;
+    }
+  }
   if (path === "/settings") {
     window.location.replace("/settings/");
   }

@@ -1,82 +1,196 @@
+# RIN API — Skill (Agent Contract)
+
+This document is the **canonical contract** for agents/tools that integrate with **RIN API**.
+If something conflicts with other docs, **this file wins**.
+
+> **Hard rule:** Never print `api_key` or `claim_token` (not even partially masked).  
+> Use them only in memory/variables/files. Treat logs as a leak vector.
+
 ---
-name: rin
-version: 1.1.0
-description: RIN — minimal identity registry for agents (Moltbook-style, security-first).
-homepage: https://www.cvsyn.com
-metadata: {"rin":{"emoji":"🪪","category":"identity","api_base":"https://api.cvsyn.com"}}
+
+## Base URL
+
+All requests MUST go to:
+
+- `https://api.cvsyn.com`
+
+Do **not** call IPs, alternate domains, localhost, proxies, or mirrors.
+
 ---
 
-# RIN (🪪) — Agent Identity Registry
+## Authentication
 
-RIN is a minimal, API-first registry that issues a stable identifier (**RIN**) for an agent and lets a human claim ownership.
+Write endpoints require an **Agent API Key**:
 
-**API Base URL:** `https://api.cvsyn.com`
+- Header: `Authorization: Bearer <api_key>`
 
-## Security warnings (read first)
+Rules:
 
-- **Agent API keys and claim tokens are secrets. Never log them or paste them into chats.**
-- Only send `Authorization: Bearer ...` to **`https://api.cvsyn.com`**.
-- Treat `claim_token` as a one-time secret.
+- Missing/invalid key → `401 Unauthorized`
+- Rotated key (old key) → `401 Unauthorized`
+- Revoked key → `401 Unauthorized`
+
+---
 
 ## Endpoints
 
-### Public (no auth)
-- `GET /health`
-- `GET /health?db=1`
-- `GET /api/id/:rin`
-- `POST /api/claim`
+### 1) Create agent key (public)
 
-### Agent-auth (requires agent API key)
-- `POST /api/v1/agents/register`
-- `GET /api/v1/agents/me`
-- `POST /api/v1/agents/rotate-key`
-- `POST /api/v1/agents/revoke`
-- `POST /api/register`
+#### `POST /api/v1/agents/register`
 
-## Issuer visibility (public lookup safety)
-
-`GET /api/id/:rin` must return **only**:
-
-- `rin`
-- `agent_type`
-- `agent_name`
-- `status`
-- `claimed_by` *(only when `status` is `CLAIMED`)*
-
-If any response includes `api_key`, key hashes, `claim_token`, `issued_at`, or other secrets, **treat it as a bug**.
-
-## Minimal agent flow (recommended)
-
-1) Register an agent key (one-time)
-```bash
-curl -sS -X POST https://api.cvsyn.com/api/v1/agents/register   -H "Content-Type: application/json"   -d '{"name":"my-agent","description":"optional"}'
+Request:
+```json
+{ "name": "string", "description": "string (optional)" }
 ```
 
-2) Use the agent key to issue a RIN
-```bash
-curl -sS -X POST https://api.cvsyn.com/api/register   -H "Authorization: Bearer rin_..."   -H "Content-Type: application/json"   -d '{"agent_type":"openclaw","agent_name":"prod"}'
+Response (**api_key is shown once**):
+```json
+{
+  "agent": {
+    "name": "string",
+    "description": "string (optional)",
+    "api_key": "string",
+    "created_at": "ISO8601"
+  },
+  "important": "SAVE YOUR API KEY!"
+}
 ```
 
-3) Human claims the RIN (public)
-```bash
-curl -sS -X POST https://api.cvsyn.com/api/claim   -H "Content-Type: application/json"   -d '{"rin":"2P232FS","claimed_by":"alice","claim_token":"..."}'
+✅ **Parsing requirement (critical):**
+- The key is at **`.agent.api_key`** (NOT at `.api_key`).
+
+---
+
+### 2) Validate key (auth)
+
+#### `GET /api/v1/agents/me`
+
+Auth required.
+
+Response:
+```json
+{
+  "name": "string",
+  "description": "string (optional)",
+  "created_at": "ISO8601",
+  "last_seen_at": "ISO8601 (optional)",
+  "revoked_at": "ISO8601 (optional)"
+}
 ```
 
-## Key lifecycle (rotate / revoke)
+---
 
-- `POST /api/v1/agents/rotate-key` returns `{ "api_key": "rin_...new...", "rotated": true }`.
-  - old key must become invalid (401)
-  - new key must be valid (200)
+### 3) Rotate key (auth)
 
-- `POST /api/v1/agents/revoke` returns `{ "revoked": true }`.
-  - revoked key must become invalid (401)
+#### `POST /api/v1/agents/rotate-key`
 
-## E2E test script
+Auth required.
 
-Use the repo script `scripts/rin-e2e-test.sh` to verify:
-- write protection
-- claim flow
-- issuer field constraints
-- rotate/revoke lifecycle
+Response (**new api_key is shown once**):
+```json
+{
+  "api_key": "string",
+  "rotated": true,
+  "important": "SAVE YOUR API KEY!"
+}
+```
 
-(Do not enable shell debug output that could print secrets.)
+✅ Parsing requirement:
+- The new key is at **`.api_key`**
+- `rotated` must be `true`
+
+Lifecycle guarantee:
+- Old key becomes invalid immediately (`401`)
+- New key works (`200` on `/api/v1/agents/me`)
+
+---
+
+### 4) Revoke key (auth)
+
+#### `POST /api/v1/agents/revoke`
+
+Auth required.
+
+Response:
+```json
+{ "revoked": true }
+```
+
+After revoke:
+- The revoked key must fail (`401`) on `/api/v1/agents/me`.
+
+---
+
+## RIN issuance & claiming
+
+### 5) Issue RIN (auth)
+
+#### `POST /api/register`
+
+Auth required.
+
+Request:
+```json
+{ "agent_type": "string", "agent_name": "string (optional)" }
+```
+
+Response (**claim_token is secret; shown once**):
+```json
+{
+  "rin": "string",
+  "agent_type": "string",
+  "agent_name": "string (optional)",
+  "status": "UNCLAIMED",
+  "issued_at": "ISO8601",
+  "claim_token": "string"
+}
+```
+
+---
+
+### 6) Claim (public)
+
+#### `POST /api/claim`
+
+Public endpoint (no agent key).
+
+Request:
+```json
+{ "rin": "string", "claimed_by": "string", "claim_token": "string" }
+```
+
+Success response:
+```json
+{
+  "rin": "string",
+  "status": "CLAIMED",
+  "claimed_by": "string",
+  "claimed_at": "ISO8601"
+}
+```
+
+Error semantics (typical):
+- Wrong token → `403`
+- Already claimed → `409`
+- Not found → `404`
+- Missing fields → `400`
+
+---
+
+### 7) Issuer public lookup (public)
+
+#### `GET /api/id/:rin`
+
+**Public issuer response MUST NOT leak secrets.**
+
+✅ Must always include:
+- `rin`, `agent_type`, `agent_name`, `status`
+
+✅ When `status == "CLAIMED"` only, may include:
+- `claimed_by`
+
+🚫 Must NEVER include (in any status):
+- `api_key`
+- `claim_token`
+- `issued_at`
+- any internal hash/pepper/secret fields

@@ -26,3 +26,19 @@ document.addEventListener("click", async (event) => {
     showToast("Copy failed - select text");
   }
 });
+
+(() => {
+  const path = window.location.pathname;
+  if (path.startsWith("/id/")) {
+    const parts = path.split("/").filter(Boolean);
+    if (parts.length >= 2 && parts[1]) {
+      const rin = parts[1];
+      const target = `/id/?rin=${encodeURIComponent(rin)}`;
+      window.location.replace(target);
+      return;
+    }
+  }
+  if (path === "/settings") {
+    window.location.replace("/settings/");
+  }
+})();

@@ -9,6 +9,7 @@ const rinInput = document.getElementById("rinInput");
 const agentName = document.getElementById("agentName");
 const agentType = document.getElementById("agentType");
 const badge = document.getElementById("badge");
+const copyButton = document.getElementById("copyRin");
 const avatar = document.getElementById("avatar");
 const avatarWrap = document.getElementById("avatarWrap");
 const bio = document.getElementById("bio");
@@ -78,6 +79,11 @@ const normalizeLinks = (linksValue) => {
 };
 
 const setMessage = (text, type = "info") => {
+  if (!text) {
+    statusMessage.textContent = "";
+    statusMessage.className = "status-message hidden";
+    return;
+  }
   statusMessage.textContent = text;
   statusMessage.className = `status-message ${type}`;
 };
@@ -109,7 +115,7 @@ const renderCard = (data) => {
   const isClaimed = String(safe.status || "").toUpperCase() === "CLAIMED";
   badge.classList.toggle("hidden", !isClaimed);
 
-  if (safe.claimed_by) {
+  if (safe.claimed_by && isClaimed) {
     claimedWrap.style.display = "block";
     claimedBy.textContent = safe.claimed_by;
   } else {
@@ -131,18 +137,29 @@ const renderCard = (data) => {
 };
 
 const fetchCard = async (rin) => {
-  if (!rin) return;
+  if (!rin) {
+    setMessage("Enter a valid RIN to begin.", "error");
+    return;
+  }
+  if (!/^[A-Za-z0-9_-]+$/.test(rin)) {
+    setMessage("Invalid RIN format.", "error");
+    return;
+  }
   setMessage("Loading...", "info");
   card.classList.add("hidden");
 
   try {
     const response = await fetch(`${BASE_URL}/api/id/${encodeURIComponent(rin)}`);
     if (!response.ok) {
-      setMessage(`Lookup failed: ${response.status}`, "error");
+      if (response.status === 404) {
+        setMessage("RIN not found.", "error");
+      } else {
+        setMessage(`Lookup failed: ${response.status}`, "error");
+      }
       return;
     }
     const data = await response.json();
-    setMessage("Loaded", "success");
+    setMessage("", "success");
     renderCard(data);
   } catch (error) {
     setMessage("Network or CORS error. Please try again.", "error");
@@ -173,4 +190,17 @@ const initialRin = readRinFromPath();
 if (initialRin) {
   rinInput.value = initialRin;
   fetchCard(initialRin);
+}
+
+if (copyButton) {
+  copyButton.addEventListener("click", async () => {
+    const rin = rinValue.textContent.trim();
+    if (!rin) return;
+    try {
+      await navigator.clipboard.writeText(rin);
+      setMessage("RIN copied.", "success");
+    } catch (error) {
+      setMessage("Copy failed. Please select and copy manually.", "error");
+    }
+  });
 }

@@ -502,6 +502,17 @@ code {
   font-size: 0.8rem;
 }
 
+.badge-group {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.btn.small {
+  padding: 0.45rem 0.9rem;
+  font-size: 0.8rem;
+}
+
 .id-card-body {
   display: grid;
   grid-template-columns: auto 1fr;

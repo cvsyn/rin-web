@@ -191,6 +191,16 @@ a {
   transform: translateY(-2px);
 }
 
+.icon-btn {
+  gap: 0.6rem;
+}
+
+.icon-btn svg {
+  width: 18px;
+  height: 18px;
+  fill: currentColor;
+}
+
 .hero {
   padding: 5rem 0 3rem;
 }

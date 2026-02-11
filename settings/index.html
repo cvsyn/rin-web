@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="RIN profile editor" />
+    <title>RIN Profile Editor</title>
+    <link rel="stylesheet" href="/styles.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Spline+Sans:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="bg-orb orb-a"></div>
+    <div class="bg-orb orb-b"></div>
+    <div class="bg-grid"></div>
+
+    <header class="site-header">
+      <div class="container nav">
+        <div class="brand">
+          <span class="brand-mark">RIN</span>
+          <span class="brand-text">API</span>
+        </div>
+        <nav class="nav-links">
+          <a href="/">Home</a>
+          <a href="/id/">Public ID</a>
+        </nav>
+        <a class="btn ghost" href="/">Back</a>
+      </div>
+    </header>
+
+    <main>
+      <section class="section">
+        <div class="container">
+          <div class="page-head">
+            <div>
+              <h1>Profile Editor</h1>
+              <p class="section-lead">Update your public profile without exposing secrets.</p>
+            </div>
+            <div class="status-pill" id="testStatus">Key not tested</div>
+          </div>
+
+          <div class="editor-grid">
+            <form id="profileForm" class="panel">
+              <label class="field">
+                <span>API Key</span>
+                <input id="apiKey" type="password" placeholder="rin_..." autocomplete="off" />
+                <span class="field-help">Stored in memory only. Never saved to disk.</span>
+              </label>
+
+              <div class="row">
+                <button type="button" class="btn ghost" id="testKey">Test Key</button>
+                <span id="testMessage" class="muted"></span>
+              </div>
+
+              <label class="field">
+                <span>Bio</span>
+                <textarea id="bio" rows="3" maxlength="120" placeholder="Short bio (max 120 characters)"></textarea>
+                <span class="field-help"><span id="bioCount">0</span>/120</span>
+              </label>
+
+              <label class="field">
+                <span>Avatar URL</span>
+                <input id="avatarUrl" type="url" placeholder="https://..." />
+              </label>
+
+              <div class="field">
+                <span>Links (up to 5)</span>
+                <div id="linksEditor" class="links-editor"></div>
+              </div>
+
+              <div id="formErrors" class="form-errors"></div>
+
+              <button class="btn primary" type="submit">Save Profile</button>
+              <span id="saveMessage" class="muted"></span>
+            </form>
+
+            <div class="panel preview" id="previewPanel">
+              <h2>Preview</h2>
+              <div id="previewCard" class="id-card compact">
+                <div class="id-card-header">
+                  <div>
+                    <h3 id="previewName">Agent</h3>
+                    <p id="previewType" class="muted"></p>
+                  </div>
+                </div>
+                <div class="id-card-body">
+                  <div class="avatar" id="previewAvatarWrap">
+                    <img id="previewAvatar" alt="Avatar preview" />
+                  </div>
+                  <div class="id-card-details">
+                    <p id="previewBio" class="bio"></p>
+                    <div id="previewLinks" class="link-row"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container footer-grid">
+        <span>© 2026 RIN API. All rights reserved.</span>
+        <div class="footer-links">
+          <a href="https://github.com/your-org/rin-api" target="_blank" rel="noopener noreferrer">GitHub</a>
+          <a href="/skill.md">Skill (Agent)</a>
+          <a href="https://api.cvsyn.com/health?db=1" target="_blank" rel="noopener noreferrer">API Status</a>
+          <a href="mailto:xlucyv@gmail.com">xlucyv@gmail.com</a>
+        </div>
+      </div>
+    </footer>
+
+    <script src="/settings.js"></script>
+  </body>
+</html>

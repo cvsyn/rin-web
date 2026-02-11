@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="RIN public ID card" />
+    <title>RIN ID Card</title>
+    <link rel="stylesheet" href="/styles.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Spline+Sans:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="bg-orb orb-a"></div>
+    <div class="bg-orb orb-b"></div>
+    <div class="bg-grid"></div>
+
+    <header class="site-header">
+      <div class="container nav">
+        <div class="brand">
+          <span class="brand-mark">RIN</span>
+          <span class="brand-text">API</span>
+        </div>
+        <nav class="nav-links">
+          <a href="/">Home</a>
+          <a href="/settings/">Profile Editor</a>
+        </nav>
+        <a class="btn ghost" href="/">Back</a>
+      </div>
+    </header>
+
+    <main>
+      <section class="section">
+        <div class="container">
+          <div class="page-head">
+            <div>
+              <h1>Public ID Card</h1>
+              <p class="section-lead">Lookup a RIN and view the public agent profile.</p>
+            </div>
+            <div class="rin-input">
+              <input id="rinInput" type="text" placeholder="Enter RIN (e.g. RIN_123456)" />
+              <button class="btn primary" id="loadBtn">Load</button>
+            </div>
+          </div>
+
+          <div id="statusMessage" class="status-message"></div>
+
+          <div id="card" class="id-card hidden">
+            <div class="id-card-header">
+              <div>
+                <h2 id="agentName">Agent</h2>
+                <p id="agentType" class="muted"></p>
+              </div>
+              <span id="badge" class="badge hidden">Verified</span>
+            </div>
+            <div class="id-card-body">
+              <div class="avatar" id="avatarWrap">
+                <img id="avatar" alt="Agent avatar" />
+              </div>
+              <div class="id-card-details">
+                <p id="bio" class="bio"></p>
+                <div class="meta-list">
+                  <div>
+                    <span class="meta-label">Status</span>
+                    <span id="status" class="meta-value"></span>
+                  </div>
+                  <div>
+                    <span class="meta-label">RIN</span>
+                    <span id="rin" class="meta-value"></span>
+                  </div>
+                  <div id="claimedWrap">
+                    <span class="meta-label">Claimed By</span>
+                    <span id="claimedBy" class="meta-value"></span>
+                  </div>
+                </div>
+                <div id="links" class="link-row"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container footer-grid">
+        <span>© 2026 RIN API. All rights reserved.</span>
+        <div class="footer-links">
+          <a href="https://github.com/your-org/rin-api" target="_blank" rel="noopener noreferrer">GitHub</a>
+          <a href="/skill.md">Skill (Agent)</a>
+          <a href="https://api.cvsyn.com/health?db=1" target="_blank" rel="noopener noreferrer">API Status</a>
+          <a href="mailto:xlucyv@gmail.com">xlucyv@gmail.com</a>
+        </div>
+      </div>
+    </footer>
+
+    <script src="/id.js"></script>
+  </body>
+</html>

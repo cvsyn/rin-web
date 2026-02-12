@@ -1,7 +1,7 @@
-/id /id.html 200
-/id/ /id.html 200
-/id/* /id.html 200
-/api/id/* /id.html 200
+/id /id 200
+/id/ /id 200
+/id/* /id 200
+/api/id/* /id 200
 /settings /settings/index.html 200
 /settings/ /settings/index.html 200
 /settings/* /settings/index.html 200
